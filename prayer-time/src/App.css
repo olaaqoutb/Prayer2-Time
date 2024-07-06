@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap');
+ html{
+  direction: rtl;
+  font-family: "IBM Plex Sans Arabic", sans-serif !important
+
+}
+#root {
+  margin: auto;
+  text-align: center;
+}
+.card{
+  width: 90vw;
+  padding: 10px;
+}
+
+
