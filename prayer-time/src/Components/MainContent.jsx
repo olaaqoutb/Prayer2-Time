@@ -9,9 +9,12 @@ import Select from "@mui/material/Select";
 import axios from "axios"; // it is about api//
 import { useEffect, useState } from "react";
 import moment from "moment";
+import "moment/dist/locale/ar-dz";
+moment.locale("ar");
 
 export default function MainContent() {
   // States //
+  const [nextPrayerIndex, setNextPrayerIndex] = useState(2);
   const [timings, setTimings] = useState({
     Fajr: "04:38",
     Dhuhr: "12:58",
@@ -21,24 +24,33 @@ export default function MainContent() {
   });
   const [selectedCity, setSelectedCity] = useState({
     displayName: "مصر العربية",
-    ApiName: "Cairo",
+    ApiName: "Egypt",
   });
 
   const [today, setToday] = useState("");
+  const [timer, setTimer] = useState(10);
 
-  const avilableCities = [
+  const availableCities = [
     {
       displayName: "مصر العربية",
-      ApiName: "Cairo",
+      ApiName: "Egypt",
     },
     {
       displayName: "مكة المكرمة",
-      ApiName: "Makkah",
+      ApiName: "Makkah al Mukarramah",
     },
     {
       displayName: "الدمام",
       ApiName: "Dammam",
     },
+  ];
+
+  const prayerArray = [
+    { key: "Fajr", displayName: "الفجر" },
+    { key: "Dhuhr", displayName: "الظهر" },
+    { key: "Asr", displayName: "العصر" },
+    { key: "Maghrib", displayName: "المغرب" },
+    { key: "Isha", displayName: "العشاء" },
   ];
 
   const getTimings = async (city) => {
@@ -51,11 +63,54 @@ export default function MainContent() {
   useEffect(() => {
     getTimings(selectedCity.ApiName);
     const t = moment();
-    setToday(t.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+    setToday(t.format("dddd , MMMM Do , YYYY | h:mm:ss a"));
   }, [selectedCity]);
 
+  useEffect(() => {
+    let interval = setInterval(() => {
+      setupCountDownTimer();
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [timings]);
+
+  const setupCountDownTimer = () => {
+    const momentNow = moment();
+    let PrayerIndex = 2;
+
+    if (
+      momentNow.isAfter(moment(timings["Fajr"], "HH:mm")) &&
+      momentNow.isBefore(moment(timings["Dhuhr"], "HH:mm"))
+    ) {
+      PrayerIndex = 1;
+    } else if (
+      momentNow.isAfter(moment(timings["Dhuhr"], "HH:mm")) &&
+      momentNow.isBefore(moment(timings["Asr"], "HH:mm"))
+    ) {
+      PrayerIndex = 2;
+    } else if (
+      momentNow.isAfter(moment(timings["Asr"], "HH:mm")) &&
+      momentNow.isBefore(moment(timings["Maghrib"], "HH:mm"))
+    ) {
+      PrayerIndex = 3;
+    } else if (
+      momentNow.isAfter(moment(timings["Maghrib"], "HH:mm")) &&
+      momentNow.isBefore(moment(timings["Isha"], "HH:mm"))
+    ) {
+      PrayerIndex = 4;
+    } else {
+      PrayerIndex = 0;
+    }
+    setNextPrayerIndex(PrayerIndex);
+
+    const nextPrayerTime = moment(timings[prayerArray[PrayerIndex].key], "HH:mm");
+    const duration = moment.duration(nextPrayerTime.diff(momentNow));
+    setTimer(`${duration.hours()}:${duration.minutes()}:${duration.seconds()}`);
+  };
+
   const handleCityChange = (event) => {
-    const cityObject = avilableCities.find((city) => {
+    const cityObject = availableCities.find((city) => {
       return city.ApiName === event.target.value;
     });
     setSelectedCity(cityObject);
@@ -68,12 +123,13 @@ export default function MainContent() {
           <div>
             <h2>{today}</h2>
             <h1>{selectedCity.displayName}</h1>
+    
           </div>
         </Grid>
         <Grid xs={6}>
           <div>
-            <h2>متبقي حتي صلاة العصر</h2>
-            <h1>00:10:20</h1>
+            <h2>متبقي حتى صلاة {prayerArray[nextPrayerIndex].displayName}</h2>
+            <h1>{timer}</h1>
           </div>
         </Grid>
       </Grid>
@@ -82,7 +138,7 @@ export default function MainContent() {
       <Stack
         direction="row"
         justifyContent={"space-around"}
-        style={{ marginTop: "50px" }}
+        style={{ marginTop: "40px" }}
       >
         <Prayer
           name="الفجر"
@@ -125,7 +181,7 @@ export default function MainContent() {
             label="المدينة"
             onChange={handleCityChange}
           >
-            {avilableCities.map((city) => (
+            {availableCities.map((city) => (
               <MenuItem key={city.ApiName} value={city.ApiName}>
                 {city.displayName}
               </MenuItem>
