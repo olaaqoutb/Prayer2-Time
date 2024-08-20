@@ -10,6 +10,12 @@ import axios from "axios"; // it is about api//
 import { useEffect, useState } from "react";
 import moment from "moment";
 import "moment/dist/locale/ar-dz";
+import fajr from "../image/fajr-prayer.png"
+import Duhr from "../image/dhhr-prayer-mosque.png"
+import Asr from "../image/asr-prayer-mosque.png"
+import Magreb from "../image/sunset-prayer-mosque.png"
+import Esha from "../image/night-prayer-mosque.png"
+
 moment.locale("ar");
 
 export default function MainContent() {
@@ -143,27 +149,28 @@ export default function MainContent() {
         <Prayer
           name="الفجر"
           time={timings.Fajr}
-          image="../../public/fajr-prayer.png"
+          image={fajr}
         />
+        {console.log()}
         <Prayer
           name="الضهر"
           time={timings.Dhuhr}
-          image="../../public/dhhr-prayer-mosque.png"
+          image={Duhr}
         />
         <Prayer
           name="العصر"
           time={timings.Asr}
-          image="../../public/asr-prayer-mosque.png"
+          image={Asr}
         />
         <Prayer
           name="المغرب"
           time={timings.Maghrib}
-          image="../../public/sunset-prayer-mosque.png"
+          image={Magreb}
         />
         <Prayer
           name="العشاء"
           time={timings.Isha}
-          image="../../public/night-prayer-mosque.png"
+          image={Esha}
         />
       </Stack>
 
