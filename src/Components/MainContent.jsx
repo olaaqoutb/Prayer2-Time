@@ -151,7 +151,7 @@ export default function MainContent() {
           time={timings.Fajr}
           image={fajr}
         />
-        {console.log()}
+     
         <Prayer
           name="الضهر"
           time={timings.Dhuhr}
